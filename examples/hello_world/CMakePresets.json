@@ -1,0 +1,58 @@
+{
+    "version": 5,
+    "cmakeMinimumRequired": {
+        "major": 3,
+        "minor": 23,
+        "patch": 0
+    },
+    "configurePresets": [
+        {
+            "name": "default",
+            "displayName": "default",
+            "description": "Default preset that are inherited by all",
+            "generator": "Ninja",
+            "hidden": true,
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "zig-cc",
+                "CMAKE_CXX_COMPILER": "zig-c++",
+                "CMAKE_AR": "zig-ar",
+                "CMAKE_RANLIB": "zig-ranlib",
+                "CMAKE_BUILD_TYPE": "Debug"
+            }
+        },
+        {
+            "name": "windows-debug",
+            "displayName": "64bit Windows Debug",
+            "inherits": "default",
+            "binaryDir": "${sourceDir}/win64/",
+            "cacheVariables": {
+                "ZIG_TARGET": "x86_64-windows-gnu"
+            }
+        },
+        {
+            "name": "windows-release",
+            "displayName": "64bit Windows Release",
+            "inherits": "windows-debug",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release"
+            }
+        },
+        {
+            "name": "linux-debug",
+            "displayName": "64bit Linux Debug",
+            "inherits": "default",
+            "binaryDir": "${sourceDir}/linux64/",
+            "cacheVariables": {
+                "ZIG_TARGET": "x86_64-linux-gnu"
+            }
+        },
+        {
+            "name": "linux-release",
+            "displayName": "64bit Linux Release",
+            "inherits": "linux-debug",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release"
+            }
+        }
+    ]
+}
