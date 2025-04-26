@@ -1,75 +1,55 @@
-cmake_minimum_required( VERSION 3.23 )
-# Turn on link time optimization for everything
-set( CMAKE_INTERPROCEDURAL_OPTIMIZATION_RELEASE ON )
+cmake_minimum_required(VERSION 3.23)
 
-# Output compile commands to compile_commands.json (for debugging CMake issues)
-set( CMAKE_EXPORT_COMPILE_COMMANDS ON )
+set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_RELEASE ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Main project information
-project( GDExtensionTemplate LANGUAGES CXX VERSION 0.1.0)
+project(gdextension LANGUAGES CXX VERSION 0.1.0)
 
-# Create our library
-add_library( ${PROJECT_NAME} SHARED )
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+    set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "Choose the type of build." FORCE)
+    set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release")
+endif()
+message(STATUS "Build type set to: ${CMAKE_BUILD_TYPE}")
 
-target_compile_features( ${PROJECT_NAME}
+add_library(${PROJECT_NAME} SHARED)
+
+target_compile_features(${PROJECT_NAME}
     PRIVATE
-        cxx_std_17
+        cxx_std_20
 )
 
-# LIB_DIR is where the actual library ends up. This is used in both the build directory and the
-# install directory and needs to be consistent with the paths in the gdextension file.
-#   e.g. linux.release.x86_64 = "lib/Linux-x86_64/libGDExtensionTemplate.so"
-# set( LIB_DIR "lib/${CMAKE_SYSTEM_NAME}-${LIB_ARCH}" )
+set(LIB_DIR "lib-${CMAKE_CONFIG}/${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR}")
 
-# message( STATUS "Building ${PROJECT_NAME} for ${LIB_ARCH} on ${CMAKE_SYSTEM_NAME}")
-
-# BUILD_OUTPUT_DIR is where we put the resulting library (in the build directory)
-set( BUILD_OUTPUT_DIR "${PROJECT_BINARY_DIR}/${PROJECT_NAME}/" )
-
-set_target_properties( ${PROJECT_NAME}
+set_target_properties(${PROJECT_NAME}
     PROPERTIES
         CXX_VISIBILITY_PRESET hidden
         VISIBILITY_INLINES_HIDDEN true
-        RUNTIME_OUTPUT_DIRECTORY "${BUILD_OUTPUT_DIR}/${LIB_DIR}"
-        LIBRARY_OUTPUT_DIRECTORY "${BUILD_OUTPUT_DIR}/${LIB_DIR}"
+
+        # output into the gdextension directory
+        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/${gdextension}/${LIB_DIR}"
+        LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/${gdextension}/${LIB_DIR}"
+
+        DEBUG_POSTFIX "d"
 )
 
-if( NOT DEFINED CMAKE_DEBUG_POSTFIX )
-    set_target_properties( ${PROJECT_NAME}
-        PROPERTIES
-            DEBUG_POSTFIX "-d"
-    )
-endif()
+set(GODOT_CPP_SYSTEM_HEADERS ON CACHE INTERNAL "")
+add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/../godot-cpp" "${CMAKE_CURRENT_BINARY_DIR}/godot-cpp" EXCLUDE_FROM_ALL)
 
-# # Copy over additional files from the support_files directory
-# add_custom_command(
-#     TARGET ${PROJECT_NAME} POST_BUILD
-#     COMMAND ${CMAKE_COMMAND} -E copy_directory
-#             "${CMAKE_SOURCE_DIR}/support_files"
-#             ${BUILD_OUTPUT_DIR}
-# )
-# godot-cpp
-# From here: https://github.com/godotengine/godot-cpp
-if ( NOT EXISTS "${CMAKE_CURRENT_LIST_DIR}/godot-cpp/Makefile" )
-    message(
-        FATAL_ERROR
-            "[${PROJECT_NAME}] The godot-cpp submodule was not downloaded. Please update submodules: git submodule update --init --recursive."
-    )
-endif()
+set_target_properties(godot-cpp PROPERTIES CXX_VISIBILITY_PRESET hidden)
 
-set( GODOT_CPP_SYSTEM_HEADERS ON CACHE BOOL "" FORCE )
-
-add_subdirectory( godot-cpp )
-
-# get_target_property(my_foo_original godot::cpp ALIASED_TARGET)
-# message(STATUS "Alias my::foo refers to the target ${my_foo_original}")
-
-set_target_properties( godot-cpp.template_debug PROPERTIES CXX_VISIBILITY_PRESET hidden)
-
-add_subdirectory( "${CMAKE_CURRENT_LIST_DIR}/gdextension" )
-
-target_link_libraries( ${PROJECT_NAME}
+target_sources(${PROJECT_NAME}
     PRIVATE
-        godot-cpp.template_debug
+        ${CMAKE_CURRENT_SOURCE_DIR}/gdextension/register_types.cpp
+)
+
+target_include_directories(${PROJECT_NAME}
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/gdextension
+)
+
+target_link_libraries(${PROJECT_NAME}
+    PRIVATE
+        godot-cpp
 )
 
