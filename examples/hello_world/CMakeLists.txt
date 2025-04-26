@@ -19,7 +19,13 @@ target_compile_features(${PROJECT_NAME}
         cxx_std_20
 )
 
-set(LIB_DIR "lib-${CMAKE_CONFIG}/${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR}")
+# set output path to be consistant
+#   lib/Linux-x64/
+#   lib/Cygwin-x64/
+#   lib/Windows-AMD64/
+#   lib/Android-x86_64/
+#   lib/Android-arm64-v8a/
+set(LIB_DIR lib/${CMAKE_SYSTEM_NAME}-$<IF:$<PLATFORM_ID:Android>,${CMAKE_ANDROID_ARCH_ABI},${CMAKE_SYSTEM_PROCESSOR}>)
 
 set_target_properties(${PROJECT_NAME}
     PROPERTIES
@@ -30,7 +36,7 @@ set_target_properties(${PROJECT_NAME}
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/${gdextension}/${LIB_DIR}"
         LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/${gdextension}/${LIB_DIR}"
 
-        DEBUG_POSTFIX "d"
+        DEBUG_POSTFIX "-debug"
 )
 
 set(GODOT_CPP_SYSTEM_HEADERS ON CACHE INTERNAL "")

@@ -4,17 +4,17 @@ entry_symbol = "example_library_init"
 compatibility_minimum = "4.4"
 
 [libraries]
+windows.debug.x86_64 = "res://gdextension/lib/Windows_AMD64/gdextension-debug.dll"
+windows.release.x86_64 = "res://gdextension/lib/Windows_AMD64/gdextension.dll"
 
-windows.debug.x86_64 = "res://bin/win64/example_debug_x64.dll"
-windows.release.x86_64 = "res://bin/win64/example_release_x64.dll"
+linux.debug.x86_64 = "res://gdextension/lib/Linux-x64/libgdextension-debug.so"
+linux.release.x86_64 = "res://gdextension/lib/Linux-x64/libgdextension.so"
 
-linux.debug.x86_64 = "res://bin/linux/example_debug_x64.so"
-linux.release.x86_64 = "res://bin/linux/example_release_x64.so"
+android.debug.x86_64 = "res://gdextension/lib/Android-x86_64/libgdextension-debug.so"
+android.release.x86_64 = "res://gdextension/lib/Linux-x86_64/libgdextension.so"
 
-android.debug.x86_64 = "res://bin/android/example_debug_x64.so"
-android.release.x86_64 = "res://bin/android/example_release_x64.so"
-android.debug.arm64 = "res://bin/android/example_debug_arm64.so"
-android.release.arm64 = "res://bin/android/example_release_arm64.so"
+android.debug.arm64 = "res://gdextension/lib/Android-arm64-v8a/libgdextension-debug.so"
+android.release.arm64 = "res://gdextension/lib/Android-arm64-v8a/libgdextension.so"
 
 web.debug.threads.wasm32 = "res://bin/web/example_debug_threads.wasm"
 web.release.threads.wasm32 = "res://bin/web/example_release_threads.wasm"
